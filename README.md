@@ -18,15 +18,15 @@ Our goal is to identify countries with the highest maternal mortality rates and 
 Detailed Plans and Timeline
 
 1. Merging Datasets: Thursday, 12/5
-- Combine IHME maternal mortality ratios (1990–2011) with Our World in Data female literacy rates (1970–2022).
+   - Combine IHME maternal mortality ratios (1990–2011) with Our World in Data female literacy rates (1970–2022).
 2. Proposal Submission: Friday, 12/6
 3. Analyze Merged Dataset: Saturday, 12/7
 4. Work on Website Descriptions and References: Sunday, 12/8
-- Include an introductory page, references, and ethical considerations.
+   - Include an introductory page, references, and ethical considerations.
 5. Data Visualization Implementation: Monday, 12/9
-- Each team member will create one interactive visualization.
+   - Each team member will create one interactive visualization.
 6. Finalize Website: Tuesday, 12/10 (and Wednesday 12/11 as needed)
-- Polish the Shiny web application as the final product, ensuring all visualizations and analyses are integrated.
+   - Polish the Shiny web application as the final product, ensuring all visualizations and analyses are integrated.
 7. Present to class: Thursday, 12/12
   
 Final Deliverable
