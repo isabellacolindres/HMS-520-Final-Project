@@ -1,0 +1,47 @@
+### Merging Data Sets ###
+# December 5, 2024
+
+library("readr")
+library("dplyr")
+library("data.table")
+library("writexl")
+library("readxl")
+
+maternalmortality <- read_excel("Desktop/HMS520-Autumn2024/final/DATASET_1_GLOBAL_MATERNAL_MORTALITY_1990_2011.xlsx")
+femaleliteracy <- read_excel("Desktop/HMS520-Autumn2024/final/DATASET_2_ADULT_LITERACY_FEMALE.xlsx")
+
+View(maternalmortality)
+View(femaleliteracy)
+
+####-----####
+# Reconcile differences in column names and values. 
+# Maternal mortality dataset is the reference nomenclature for merging 
+####-----####
+
+setnames(femaleliteracy, "Entity", "Country") # setting similar column names
+
+#Function to reconcile the verbiage for World and Global
+global_df <- function(df) {
+  # Apply gsub to every column in the data frame
+  df[] <- lapply(df, function(x) {
+    if (is.character(x)) {
+      return(gsub("World", "GLOBAL", x, ignore.case = TRUE))  # Replace in character columns
+    } else {
+      return(x)  # Leave non-character columns unchanged
+    }
+  })
+  return(df)
+}
+
+femaleliteracy_mod <- global_df(femaleliteracy)
+
+####---####
+# Merge reconciled data sets
+####---####
+
+str(femaleliteracy_mod) #checking col names
+str(maternalmortality) #checking col names
+
+merged <- merge(maternalmortality, femaleliteracy_mod, by = c("Country", "Year"))
+
+write_xlsx(merged, "maternalmortality_literacy_data.xlsx") #writing output excel for further data analysis
