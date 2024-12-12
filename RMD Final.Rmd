@@ -1,0 +1,120 @@
+---
+title: "Maternal Mortality Ratio and Female Literacy"
+Authors: "Natalie Chen, Isabella Colindres and Vincent Tran"
+output:
+  pdf_document: default
+  fig_width: 20
+  fig_height: 6
+  word_document: default
+date: "2024-12-12"
+---
+
+```{r setup, include=FALSE}
+library("readr")
+library("dplyr")
+library("data.table")
+library("ggplot2")
+library("writexl")
+library("ggrepel")
+library("readxl")
+setwd("~/Desktop")
+```
+
+
+```{r, include=FALSE}
+data <- read_excel("~/Desktop/HMS520-Autumn2024/final/maternalmortality_literacy_data.xlsx")
+```
+
+## Maternal mortality and female literacy: an exploration and illustration
+
+Maternal mortality ratios are an indicator and a function of both social and economic development. Literacy rates are an additional metric to measure socioeconomic progress and capital distributed across sex, location, and age. It is a well investigated interplay, that between MMR and female literacy rates [1]. Both measures might inform the other; therefore the role of social factors such as literacy targeted towards lowering morbidity levels warrants a refocus in maternal mortality research. Maternal mortality explanations must take into account the socioeconomic factors such as income and literacy. 
+
+Therefore, in this project we endeavor to wrangle the related data describing maternal mortality ratios and female literacy rates over time and location.
+
+The project aims to: 
+1. Merging data sets to build our own data frame for further analysis. By merging data sets from two different global health institutes we 1) bridge data structures and 2) highlight the data wrangling skills required for  and illustrate the dynamics between MMR and female literacy rates in women ages 15+. 
+2. Visualize and analyse the compiled and cleaned data. a. Global trends over time. b. Regional trends and differences
+
+All of the code is located in the following GitHub repository: specific code chunks that derived the visualizations will be linked. 
+https://github.com/isabellacolindres/HMS-520-Final-Project  
+
+
+## Merging datasets
+
+Code: https://github.com/isabellacolindres/HMS-520-Final-Project/pull/1 
+
+The above code 1) uploads and 2) reconciles primary differences in data structure and nomenclature from datasets from two different sources.
+
+1. Maternal mortality: https://ghdx.healthdata.org/record/ihme-data/maternal-mortality-estimates-and-mdg-5-attainment-country-1990-2011
+2. Literacy rates for women: https://ourworldindata.org/grapher/adult-literacy-female.
+rename columns and write functions to rename "global" to facilitate merging. Once that's complete, the datasets are merged by country and year and I write it into an excel output for next steps with visualizations and analysis.
+
+We now have our data merged over time, location, and literacy rates (LR) and maternal mortality ratios (MMR). In the process of merging our data we did lose some locations and years since there were missing values across the matrices and the incommensurable data was dropped. This demonstrates the limitations of data cleaning and wrangling when working across data sets produced by different health and demographic agencies. 
+
+## Data structure and prep
+```{r}
+str(data)
+```
+The available rows and columns of overlapping data will allow us to examine MMR and female literacy at a global level, and to zoom into regions and countries. 
+
+## Global Landscape of MMR and Female Literacy
+```{r}
+setnames(data, "Literacy rate, adult female (% of females ages 15 and above)", "LR")
+
+#easier nomenclature for plotting
+
+global_scale <- subset(data, Country == "GLOBAL") #subsetting to global
+
+ggplot(global_scale, aes(x = Year, y = `Maternal mortality ratio (MMR)`)) +
+  geom_point() +
+  theme_classic() +
+  geom_smooth(method = "lm", se = TRUE, color = "purple") +
+  labs(title = "Global MMR over Years 1990-2011")
+```
+```{r}
+ggplot(global_scale, aes(x = Year, y = LR)) +
+  geom_point() +
+  theme_classic() +
+  geom_smooth(method = "lm", se = TRUE, color = "darkgreen") +
+  labs(title = "Global Female Literacy Rate (%) over Years 1990-2011",
+       y = "Female literacy rate % ages above 15")
+```
+
+The global MMR demonstrates a steady decline between the years 1990 and 2011, in parallel to the female literacy rates which demonstrate a steady global increase amongst women ages 15 and above. If we plot the MMR over the female literacy rates:
+```{r}
+ggplot(global_scale, aes(x = LR, y = `Maternal mortality ratio (MMR)`, color = Year)) +
+  geom_point() +
+  theme_classic() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(title = "Yearly trends of global MMR vs. female literacy rates",
+       x = "Female literacy rates (%) above age 15")
+  scale_y_log10()
+```
+The above plot demonstrates that as female literacy rates increase, the global MMR declines. While this does not demonstrate a causal relationship, as there are a number of additional mediators and levers of socioeconomic status (e.g. WASH, primary healthcare provision, occupation) that can inform MMR, this plot strikingly alludes to an interconnectedness between literacy and MMR. You can see the color gradience in years follow time trend from figures 1 and 2: over time both literacy and MMR improve globally.
+
+But, it is worth interrogating beyond the global scale of progress; into the regional and country specific pictures of MMR and literacy trends. 
+
+## Regional 
+
+```{r, echo=TRUE}
+ggplot(data, aes(x = LR, y = `Maternal mortality ratio (MMR)`, color = Year)) +
+  geom_point() +
+  theme_classic()+
+  theme(text = element_text(size = 5),
+        plot.title = element_text(size = 14),
+        axis.title = element_text(size = 10),) +
+  geom_smooth(method = "lm", se = FALSE, color = "orange") +
+  scale_y_log10() +
+  labs(title = "GBD Regional MMR over female literacy (1990-2011)",
+       x = "Female literacy rates (%) above age 15") +
+  facet_wrap(vars(`GBD region`))
+```
+The above plot demonstrates that certain region experienced different levels of MMR and female literacy rates. Regions like Sub-Saharan Africa, West Sub-Saharan Africa have not experienced such improvements in MMR with female literacy rates and Southeast Asia has. Higher income regions (Asia pacific and central Europe) decreases in MMR with female literacy rates. This plot might allude to the unrepresented and additional levers of socioeconomic status which improve MMR. 
+
+Ultimately, there are global and regional improvements over time in both metrics, but these benefits are not regionally equitable Nor does female literacy data support the whole picture of MMR improvements.  
+
+## Conclusion
+
+
+## Sources
+[1] Pillai, Vijayan K., Maleku, Arati, Wei, FangHsun, Maternal Mortality and Female Literacy Rates in Developing Countries during 1970–2000: A Latent Growth Curve Analysis, International Journal of Population Research, 2013, 163292, 11 pages, 2013. https://doi.org/10.1155/2013/163292
